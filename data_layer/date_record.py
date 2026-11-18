@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
-from uuid import uuid4
 
 
 @dataclass
@@ -10,11 +8,7 @@ class DateRecord:
     is_valid: bool
     source: str
     occurrence: int
-    id: str = None
-
-    def __post_init__(self):
-        if self.id is None:
-            self.id = str(uuid4())
+    id: int = None
 
     def to_dict(self):
         return {

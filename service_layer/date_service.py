@@ -6,9 +6,6 @@ from repository_layer.date_repository import DateRepository
 
 
 class DateService:
-    """Работает с датами и использует только абстракцию репозитория."""
-
-    # Разделители в каждом формате фиксированы: смешанные варианты не принимаются.
     DATE_PATTERN = re.compile(
         r"(?<!\d)(?:"
         r"(?P<dot>\d{2}\.\d{2}\.\d{4})|"
@@ -28,10 +25,10 @@ class DateService:
         self._repository = repository
 
     def find_dates(self, text, source="Текст"):
-        """Найти все структурные совпадения; каждое вхождение — отдельная запись."""
         if not isinstance(text, str):
             raise TypeError("Для поиска необходимо передать строку.")
         records = []
+        next_id = self._repository.get_next_id()
         for occurrence, match in enumerate(self.DATE_PATTERN.finditer(text), start=1):
             key = match.lastgroup
             date_text = match.group()
@@ -48,12 +45,12 @@ class DateService:
                     is_valid=is_valid,
                     source=source,
                     occurrence=occurrence,
+                    id=next_id + len(records),
                 )
             )
         return records
 
     def save_records(self, records):
-        """Передать найденные записи репозиторию для сохранения."""
         self._repository.add_many(records)
 
     def get_all_records(self):

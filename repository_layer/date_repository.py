@@ -6,87 +6,149 @@ from data_layer.date_record import DateRecord
 
 
 class DateRepository(ABC):
-    """Контракт хранилища записей о датах."""
-
     @abstractmethod
     def add_many(self, records):
-        """Добавить несколько записей."""
+        pass
 
     @abstractmethod
     def get_all(self):
-        """Вернуть все записи."""
+        pass
 
     @abstractmethod
     def get_by_id(self, record_id):
-        """Найти запись по идентификатору."""
+        pass
+
+    @abstractmethod
+    def get_next_id(self):
+        pass
 
     @abstractmethod
     def delete(self, record_id):
-        """Удалить запись по идентификатору."""
+        pass
 
     @abstractmethod
     def clear(self):
-        """Удалить все записи."""
+        pass
 
 
 class MemoryDateRepository(DateRepository):
-    """Простое хранилище в оперативной памяти (для тестов и примеров)."""
-
     def __init__(self):
-        self._records = []
+        self.records = []
+
+    def get_next_id(self):
+        ids = [r.id for r in self.records if isinstance(r.id, int)]
+        return max(ids, default=0) + 1
 
     def add_many(self, records):
-        self._records.extend(records)
+        next_id = self.get_next_id()
+
+        for record in records:
+            if record.id is None:
+                record.id = next_id
+                next_id += 1
+
+        self.records.extend(records)
 
     def get_all(self):
-        return list(self._records)
+        return list(self.records)
 
     def get_by_id(self, record_id):
-        return next((r for r in self._records if r.id == record_id), None)
+        return next(
+            (r for r in self.records if r.id == record_id),
+            None
+        )
 
     def delete(self, record_id):
-        for index, record in enumerate(self._records):
+        for record in self.records:
             if record.id == record_id:
-                del self._records[index]
+                self.records.remove(record)
                 return True
         return False
 
     def clear(self):
-        self._records.clear()
+        self.records.clear()
 
 
 class JsonDateRepository(DateRepository):
-    """Хранилище в JSON-файле; записи сохраняются между запусками."""
-
     def __init__(self, file_path):
         self.file_path = Path(file_path)
 
     def _load(self):
         if not self.file_path.exists():
             return []
+
         try:
             with self.file_path.open("r", encoding="utf-8") as file:
                 data = json.load(file)
+
             if not isinstance(data, list):
-                raise ValueError("Корневой элемент JSON должен быть списком.")
-            return [DateRecord.from_dict(item) for item in data]
+                raise ValueError("Некорректная структура JSON.")
+
+            records = [
+                DateRecord.from_dict(item)
+                for item in data
+            ]
+
+
+            used_ids = {
+                r.id for r in records
+                if isinstance(r.id, int)
+            }
+
+            next_id = max(used_ids, default=0) + 1
+            changed = False
+
+            for record in records:
+                if not isinstance(record.id, int):
+                    while next_id in used_ids:
+                        next_id += 1
+
+                    record.id = next_id
+                    used_ids.add(next_id)
+                    next_id += 1
+                    changed = True
+
+            if changed:
+                self._write(records)
+
+            return records
+
         except json.JSONDecodeError as error:
-            raise ValueError(f"Файл хранилища содержит некорректный JSON: {error}") from error
-        except (KeyError, TypeError) as error:
-            raise ValueError(f"Неверная структура записи в JSON: {error}") from error
+            raise ValueError(
+                f"Ошибка чтения JSON: {error}"
+            ) from error
 
     def _write(self, records):
-        self.file_path.parent.mkdir(parents=True, exist_ok=True)
+        self.file_path.parent.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
         with self.file_path.open("w", encoding="utf-8") as file:
             json.dump(
-                [record.to_dict() for record in records],
+                [r.to_dict() for r in records],
                 file,
                 ensure_ascii=False,
-                indent=4,
+                indent=4
             )
+
+    def get_next_id(self):
+        records = self._load()
+        ids = [r.id for r in records if isinstance(r.id, int)]
+        return max(ids, default=0) + 1
 
     def add_many(self, records):
         current = self._load()
+        next_id = max(
+            (r.id for r in current if isinstance(r.id, int)),
+            default=0
+        ) + 1
+
+        for record in records:
+            if record.id is None:
+                record.id = next_id
+                next_id += 1
+
         current.extend(records)
         self._write(current)
 
@@ -94,15 +156,20 @@ class JsonDateRepository(DateRepository):
         return self._load()
 
     def get_by_id(self, record_id):
-        return next((r for r in self._load() if r.id == record_id), None)
+        return next(
+            (r for r in self._load() if r.id == record_id),
+            None
+        )
 
     def delete(self, record_id):
         records = self._load()
-        for index, record in enumerate(records):
+
+        for record in records:
             if record.id == record_id:
-                del records[index]
+                records.remove(record)
                 self._write(records)
                 return True
+
         return False
 
     def clear(self):

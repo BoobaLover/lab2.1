@@ -65,13 +65,16 @@ def main():
             elif choice == "4":
                 print_records(service.get_all_records())
             elif choice == "5":
-                record = service.get_record_by_id(input("Введите ID: ").strip())
+                record_id = int(input("Введите ID: ").strip())
+                record = service.get_record_by_id(record_id)
                 print_records([record] if record else [])
+
             elif choice == "6":
-                if service.delete_record(input("Введите ID для удаления: ").strip()):
+                record_id = int(input("Введите ID для удаления: ").strip())
+                if service.delete_record(record_id):
                     print("Запись удалена.")
                 else:
-                    print("Запись с таким ID не найдена.")
+                    print("Запись не найдена.")
             elif choice == "7":
                 confirmation = input("Удалить все записи? (д/н): ").strip().lower()
                 if confirmation == "д":

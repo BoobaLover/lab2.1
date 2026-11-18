@@ -1,0 +1,46 @@
+ПРОВЕРКА ПРОЕКТА
+================
+
+Проверка синтаксиса (compileall): УСПЕШНО
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 718, in _warm_feature_flows
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 509, in _warm_drawing_and_image_flows
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/generated/interface/models.py", line 32861, in bring_to_front
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/remote.py", line 764, in __call__
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/client.py", line 175, in call
+artifact_tool.rpc.client.RemoteError: Element ordering requires an owning element collection.
+
+Запуск unit-тестов: УСПЕШНО
+Команда: /opt/pyvenv/bin/python -m unittest discover -s tests -v
+
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 718, in _warm_feature_flows
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 509, in _warm_drawing_and_image_flows
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/generated/interface/models.py", line 32861, in bring_to_front
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/remote.py", line 764, in __call__
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/client.py", line 175, in call
+artifact_tool.rpc.client.RemoteError: Element ordering requires an owning element collection.
+test_missing_txt_raises_clear_error (test_data_source.DataSourceTests.test_missing_txt_raises_clear_error) ... ok
+test_read_txt_utf8 (test_data_source.DataSourceTests.test_read_txt_utf8) ... ok
+test_read_url (test_data_source.DataSourceTests.test_read_url) ... ok
+test_rejects_unsupported_url_scheme (test_data_source.DataSourceTests.test_rejects_unsupported_url_scheme) ... ok
+test_all_supported_formats (test_date_service.DateServiceTests.test_all_supported_formats) ... ok
+test_invalid_calendar_date_is_found (test_date_service.DateServiceTests.test_invalid_calendar_date_is_found) ... ok
+test_mixed_separator_and_embedded_digits_are_not_matched (test_date_service.DateServiceTests.test_mixed_separator_and_embedded_digits_are_not_matched) ... ok
+test_repeated_occurrences_are_separate (test_date_service.DateServiceTests.test_repeated_occurrences_are_separate) ... ok
+test_repository_operations_through_service (test_date_service.DateServiceTests.test_repository_operations_through_service) ... ok
+test_missing_file_is_empty_repository (test_repository.JsonRepositoryTests.test_missing_file_is_empty_repository) ... ok
+test_persistence_and_crud (test_repository.JsonRepositoryTests.test_persistence_and_crud) ... ok
+test_crud (test_repository.MemoryRepositoryTests.test_crud) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.008s
+
+OK
+
